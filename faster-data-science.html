@@ -1,0 +1,1509 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>Faster Data Science in Python</title>
+  <style type="text/css">
+    body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #222;
+  font-size: 100%;
+}
+
+.slide {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  background-color: #f7f7f7;
+}
+
+.slide-content {
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+  margin: 80px auto 0 auto;
+  padding: 30px;
+
+  font-weight: 200;
+  font-size: 200%;
+  line-height: 1.375;
+}
+
+.controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
+
+.arrow {
+  width: 0; height: 0;
+  border: 30px solid #333;
+  float: left;
+  margin-right: 30px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.prev {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+
+  border-left-width: 0;
+  border-right-width: 50px;
+}
+
+.next {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+
+  border-left-width: 50px;
+  border-right-width: 0;
+}
+
+.prev:hover {
+  border-right-color: #888;
+  cursor: pointer;
+}
+
+.next:hover {
+  border-left-color: #888;
+  cursor: pointer;
+}
+
+h1 {
+  font-size: 300%;
+  line-height: 1.2;
+  text-align: center;
+  margin: 170px 0 0;
+}
+
+h2 {
+  font-size: 100%;
+  line-height: 1.2;
+  margin: 5px 0;
+  text-align: center;
+  font-weight: 200;
+}
+
+h3 {
+  font-size: 140%;
+  line-height: 1.2;
+  border-bottom: 1px solid #aaa;
+  margin: 0;
+  padding-bottom: 15px;
+}
+
+ul {
+  padding: 20px 0 0 60px;
+  font-weight: 200;
+  line-height: 1.375;
+}
+
+.author h1 {
+  font-size: 170%;
+  font-weight: 200;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.author h3 {
+  font-weight: 100;
+  text-align: center;
+  font-size: 95%;
+  border: none;
+}
+
+a {
+  text-decoration: none;
+  color: #44a4dd;
+}
+
+a:hover {
+  color: #66b5ff;
+}
+
+pre {
+  font-size: 60%;
+  line-height: 1.3;
+}
+
+.progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 3px;
+  background-color: #b4b4b4;
+
+  -webkit-transition: width 0.05s ease-out;
+  -moz-transition: width 0.05s ease-out;
+  -o-transition: width 0.05s ease-out;
+  transition: width 0.05s ease-out;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 850px) {
+
+  body {
+    font-size: 70%;
+  }
+
+  .slide-content {
+    width: auto;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  h1 {
+    margin-top: 120px;
+  }
+
+  .prev, .prev:hover {
+    border-right-color: rgba(135, 135, 135, 0.5);
+  }
+
+  .next, .next:hover {
+    border-left-color: rgba(135, 135, 135, 0.5);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 50%;
+    overflow: hidden;
+  }
+
+  .slide-content {
+    padding: 10px;
+    margin-top: 10px;
+    height: 340px;
+  }
+
+  h1 {
+    margin-top: 50px;
+  }
+
+  ul {
+    padding-left: 25px;
+  }
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+  }
+
+  @page {
+    size: letter;
+  }
+
+  .hidden {
+    display: inline;
+  }
+
+  html {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  body {
+    margin: 0 auto !important;
+    border: 0;
+    padding: 0;
+    float: none !important;
+    overflow: visible;
+    background: none !important;
+    font-size: 52%;
+  }
+
+  .progress, .controls {
+    display: none;
+  }
+
+  .slide {
+    position: static;
+  }
+
+  .slide-content {
+    border: 1px solid #222;
+    margin-top: 0;
+    margin-bottom: 40px;
+    height: 3.5in;
+    overflow: visible;
+  }
+
+  .slide:nth-child(even) {
+    /* 2 slides per page */
+    page-break-before: always;
+  }
+}
+
+/*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #333;
+  background: #f8f8f8;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #333;
+  font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #008080;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #d14;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+
+.hljs-subst {
+  font-weight: normal;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #009926;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #fdd;
+}
+
+.hljs-addition {
+  background: #dfd;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+.slide-content {
+	font-weight: 200;
+}
+
+pre {
+    font-size: 90%;
+}
+
+h1 {
+    font-size: 200%;
+}
+
+.slide-content {
+    width: 1024px;
+    height: 960px;
+    padding: 20px;
+}
+
+.small-code {
+	font-size: 3px;
+}
+
+.pic-right {
+	position: relative;
+	left: 350px;
+	top: -200px;
+	mix-blend-mode: multiply;
+}
+
+.logo {
+    mix-blend-mode: multiply;
+}
+
+  </style>
+</head>
+<body>
+    <div class="progress">
+    <div class="progress-bar"></div>
+  </div>
+
+  <div class="slide -" id="slide-1">
+    <section class="slide-content"><h1 id="faster-data-science-in-python">Faster Data Science in Python</h1>
+<h2 id="ivan-smirnov">Ivan Smirnov</h2>
+<hr>
+
+<center><div class="logo"><img src="assets/sig-title.png" alt=""></div></center></section>
+  </div>
+  <div class="slide hidden -" id="slide-2">
+    <section class="slide-content"><p>In a typical quant finance research project:</p>
+<ul>
+<li>Most input data is tabular in nature (e.g. market data).</li>
+<li>Multiple data sources; can&#39;t always commit to rigid schemas.</li>
+<li>Not quite &quot;Big Data&quot; (= volume + velocity + variety + veracity).</li>
+<li>Experimenting requires running computations / reloading data <em>a lot</em>.</li>
+<li>Statistical / machine learning tasks often require <em>all</em> data loaded.</li>
+<li>Seemingly trivial tasks (compute stats of a dataset) may take long.</li>
+<li>Better algorithms and tooling + more efficient storage formats = more
+time spent on actual research.</li>
+</ul>
+<hr>
+
+<p>In the first section of the talk, we&#39;ll look at how to load the data faster.</p>
+<p>Hardware aside, read speeds mostly depend on the <em>storage format</em>.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-3">
+    <section class="slide-content"><p>One of the most commonly used formats for tabular data: <code>CSV</code>.</p>
+<ul>
+<li>Pros:<ul>
+<li>Plain text format, can be edited manually</li>
+<li>More &quot;tangible&quot; because some people love Excel</li>
+</ul>
+</li>
+<li>Cons:<ul>
+<li>Large file size (up to 20B to store int64, plus delimiters)</li>
+<li>Not well-specified (quoting, delimiters), slow to parse</li>
+<li>Can only hold a single 2-D table in one file</li>
+<li>Fields are not typed, stored as plain text</li>
+<li>Limited options for partial reads.</li>
+</ul>
+</li>
+<li>Python support:<ul>
+<li>built-in <code>csv</code> module</li>
+<li><code>pandas.read_csv()</code></li>
+</ul>
+</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-4">
+    <section class="slide-content"><p>Sample data used for benchmarking: <em>STAR</em> experiment (2000) at the Relativistic
+Heavy Ion Collider, Brookhaven National Laboratory:</p>
+<ul>
+<li>2,173,762 observations, 12 variables.</li>
+<li>Integer and floating-point values.</li>
+<li>Original CSV file size: 185 MB.</li>
+</ul>
+<p>Iterate over rows <em>without</em> parsing fields using built-in <code>csv</code> module:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> csv
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> csv.reader(open(<span class="hljs-string">'data.csv'</span>)): <span class="hljs-keyword">pass</span>
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">4.03</span> s per loop  <span class="hljs-comment"># we'll leave it at that</span></code></pre>
+<p>Read the entire file into a dataframe using <code>pandas.read_csv</code>:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit pd.read_csv(<span class="hljs-string">'data.csv'</span>, header=<span class="hljs-keyword">None</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">2.5</span> s per loop</code></pre>
+<p>Not particularly impressive: 74 MB/s read speed with <code>pandas</code>.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-5">
+    <section class="slide-content"><p>One of the fastest alternatives (by raw decoding speed): <code>numpy.load</code>.</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-meta">&gt;&gt;&gt; </span>data = pd.read_csv(<span class="hljs-string">'data.csv'</span>).to_records(index=<span class="hljs-keyword">False</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.save(<span class="hljs-string">'data.npy'</span>, data)
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit np.load(<span class="hljs-string">'data.npy'</span>)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">116</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.npy
+<span class="hljs-number">200</span>M data.npy</code></pre>
+<p>File size: 200 MB (larger than the original CSV file). Could be reduced
+by using <code>int32</code> for some <code>int64</code> columns, but still quite big.</p>
+<ul>
+<li>Aside from physical I/O, this is just a direct memory copy.</li>
+<li>Large file size; lack of compression may lead to slow read speeds.</li>
+<li>The dtype is not saved in the file, must be stored separately.</li>
+<li>The shape is not saved in the file, must be stored separately.</li>
+<li>Can be read as a memmap and then shared across threads without allocating
+any extra memory (which is what <code>joblib</code> does):<pre><code class="lang-python">mmap = np.load(<span class="hljs-string">'data.npy'</span>, mmap_mode=<span class="hljs-string">'r'</span>)</code></pre>
+</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-6">
+    <section class="slide-content"><p>A binary storage format popular in the scientific community: <code>HDF5</code>.</p>
+<blockquote>
+<blockquote>
+<p>&quot;HDF5 is a data model, library and file format for storing and managing data.&quot;</p>
+</blockquote>
+</blockquote>
+<p>HDF5 in a nutshell:</p>
+<ul>
+<li>HDF5 file = hierarchy of groups and datasets.</li>
+<li>Groups and datasets can have attached named attributes.</li>
+<li>Named groups and datasets are accessible by Unix-like paths.</li>
+<li>Hard/soft links, external links, links to dataset slices.</li>
+<li>HDF5 dataset = data type, dataset shape, filters (e.g. compression).</li>
+<li>Datasets can be read/written partially, in slices (hyperslabs).</li>
+<li>Support for compound data types (1-D compound dataset is a table).</li>
+<li>Support for user-defined filters and compression methods.</li>
+</ul>
+<p>Reference C implementation is provided by The HDF Group.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-7">
+    <section class="slide-content"><p>HDF5 in Python:</p>
+<ul>
+<li><code>h5py</code><ul>
+<li>thread-safe Cython wrappers around most of the HDF5 library</li>
+<li>most original HDF5 functions are accessible from Python</li>
+<li>provides a high-level object layer</li>
+<li>includes support for <code>lzo</code> compression filter</li>
+</ul>
+</li>
+<li><code>PyTables</code><ul>
+<li>opinionated library built around HDF5, not a direct wrapper</li>
+<li>object model provides functionality not originally available in HDF5</li>
+<li>introduces the notion of table (1-D compound dataset)</li>
+<li>as a consequence, doesn&#39;t support 1-D compound datasets</li>
+<li>includes support for <code>blosc</code> family of compression filters</li>
+<li>resulting HDF5 files contain extra metadata needed by PyTables</li>
+</ul>
+</li>
+<li><code>pandas</code><ul>
+<li>uses <code>PyTables</code> as the underlying engine to save/load dataframes</li>
+</ul>
+</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-8">
+    <section class="slide-content"><p>A simple usage example:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> h5py
+<span class="hljs-meta">&gt;&gt;&gt; </span>f = h5py.File(<span class="hljs-string">'test.h5'</span>, <span class="hljs-string">'w'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>g = f.create_group(<span class="hljs-string">'g'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>g[<span class="hljs-string">'a'</span>] = np.array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], int)
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'/g/b'</span>] = np.array([[<span class="hljs-number">4</span>, <span class="hljs-number">5</span>], [<span class="hljs-number">6</span>, <span class="hljs-number">7</span>]], float)
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'/c'</span>] = pd.DataFrame({<span class="hljs-string">'a'</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], <span class="hljs-string">'b'</span>: [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>]}).to_records(index=<span class="hljs-number">0</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>f.close()</code></pre>
+<p>Reading the data back:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>f = h5py.File(<span class="hljs-string">'test.h5'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'/c'</span>]
+&lt;HDF5 dataset <span class="hljs-string">"c"</span>: shape (<span class="hljs-number">2</span>, <span class="hljs-number">2</span>), type <span class="hljs-string">"&lt;i8"</span>&gt;
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'g'</span>]
+&lt;HDF5 group <span class="hljs-string">"/g"</span> (<span class="hljs-number">2</span> members)&gt;
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'/g/a'</span>][<span class="hljs-number">1</span>:]
+array([<span class="hljs-number">2</span>, <span class="hljs-number">3</span>])
+<span class="hljs-meta">&gt;&gt;&gt; </span>f[<span class="hljs-string">'g'</span>][<span class="hljs-string">'b'</span>]
+array([[ <span class="hljs-number">4.</span>,  <span class="hljs-number">5.</span>],
+       [ <span class="hljs-number">6.</span>,  <span class="hljs-number">7.</span>]])</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-9">
+    <section class="slide-content"><p>ASCII representation of the dataset can be viewed via <code>h5dump</code>:</p>
+<pre><code class="lang-bash">$ h5dump test.h5
+HDF5 <span class="hljs-string">"test.h5"</span> {
+GROUP <span class="hljs-string">"/"</span> {
+   DATASET <span class="hljs-string">"c"</span> {
+      DATATYPE  H5T_COMPOUND { H5T_STD_I64LE <span class="hljs-string">"a"</span>; H5T_STD_I64LE <span class="hljs-string">"b"</span>; }
+      DATASPACE  SIMPLE { ( 2 ) / ( 2 ) }
+      DATA { (0): { 1, 3 }, (1): { 2, 4 } }
+   }
+   GROUP <span class="hljs-string">"g"</span> {
+      DATASET <span class="hljs-string">"a"</span> {
+         DATATYPE  H5T_STD_I64LE
+         DATASPACE  SIMPLE { ( 3 ) / ( 3 ) }
+         DATA { (0): 1, 2, 3 }
+      }
+      DATASET <span class="hljs-string">"b"</span> {
+         DATATYPE  H5T_IEEE_F64LE
+         DATASPACE  SIMPLE { ( 2, 2 ) / ( 2, 2 ) }
+         DATA { (0,0): 4, 5, (1,0): 6, 7 }
+      }
+   }
+}
+}</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-10">
+    <section class="slide-content"><p>Is it fast? Let&#39;s serialize and read back the benchmark dataset:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> h5py
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> h5py.File(<span class="hljs-string">'data.raw.h5'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f[<span class="hljs-string">'data'</span>] = data
+<span class="hljs-meta">... </span>    %timeit f[<span class="hljs-string">'data'</span>][:]
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">67.8</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.raw.h5
+<span class="hljs-number">200</span>M data.raw.h5</code></pre>
+<p>It appears to be faster than <code>numpy.load</code> and takes almost exactly
+the same space (almost a direct memory dump + metadata).</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>df.to_hdf(<span class="hljs-string">'data.pd.h5'</span>, key=<span class="hljs-string">'data'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit pd.read_hdf(<span class="hljs-string">'data.pd.h5'</span>, key=<span class="hljs-string">'data'</span>)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">80.2</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.pd.h5
+<span class="hljs-number">216</span>M data.pd.h5</code></pre>
+<p>A bit slower, and the file size is bigger due to extra metadata being stored
+(<code>pandas</code> indices and container types, <code>PyTables</code> metadata).</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-11">
+    <section class="slide-content"><p>Compression?</p>
+<hr>
+
+<p>LZF compression (<code>h5py</code>):</p>
+<pre><code class="lang-python">
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> h5py.File(<span class="hljs-string">'data.lzf.h5'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.create_dataset(<span class="hljs-string">'data'</span>, data=data, compression=<span class="hljs-string">'lzf'</span>, shuffle=<span class="hljs-number">0</span>)
+<span class="hljs-meta">... </span>    %timeit f[<span class="hljs-string">'data'</span>][:]
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">332</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.lzf.h5
+<span class="hljs-number">67</span>M data.lzf.h5</code></pre>
+<p>Blosc LZ4 compression (<code>PyTables</code> via <code>pandas</code>):</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>df.to_hdf(<span class="hljs-string">'data.pd.lz4.h5'</span>, <span class="hljs-string">'data'</span>, complib=<span class="hljs-string">'blosc'</span>, complevel=<span class="hljs-number">9</span>, shuffle=<span class="hljs-number">0</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit pd.read_hdf(<span class="hljs-string">'data.pd.lz4.h5'</span>, <span class="hljs-string">'data'</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">319</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -lh data.pd.lz4.h5
+<span class="hljs-number">62</span>M data.pd.lz4.h5</code></pre>
+<p>Roughly the same results, 5x slower than reading uncompressed HDF5,
+with 3:1 compression ratio.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-12">
+    <section class="slide-content"><p>Byte shuffling?</p>
+<hr>
+
+<p>LZF compression with shuffle:</p>
+<pre><code class="lang-python">
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> h5py.File(<span class="hljs-string">'data.lzf.shuffle.h5'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.create_dataset(<span class="hljs-string">'data'</span>, data=data, compression=<span class="hljs-string">'lzf'</span>, shuffle=<span class="hljs-number">1</span>)
+<span class="hljs-meta">... </span>    %timeit f[<span class="hljs-string">'data'</span>][:]
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">888</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.lzf.shuffle.h5
+<span class="hljs-number">46</span>M data.lzf.shuffle.h5</code></pre>
+<p>Blosc LZ4 compression with (?) shuffle:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>df.to_hdf(<span class="hljs-string">'data.pd.lz4.h5'</span>, <span class="hljs-string">'data'</span>, complib=<span class="hljs-string">'blosc'</span>, complevel=<span class="hljs-number">9</span>, shuffle=<span class="hljs-number">1</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit pd.read_hdf(<span class="hljs-string">'data.pd.lz4.shuffle.h5'</span>, <span class="hljs-string">'data'</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">306</span> ms per loop
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -lh data.pd.lz4.shuffle.h5
+<span class="hljs-number">62</span>M data.pd.lz4.shuffle.h5</code></pre>
+<p>LZF manages to achieve 4:3 compression ratio at the cost of being 13x slower;
+<code>pandas</code> just seems to silently ignore the <code>shuffle</code> flag.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-13">
+    <section class="slide-content"><p>Can we use <code>blosc</code> compressors with <code>h5py</code>? Here&#39;s one way:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> tables  <span class="hljs-comment"># registers the blosc filters with the C library</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> h5py    <span class="hljs-comment"># must share the same HDF5 library</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> h5py.File(<span class="hljs-string">'data.h5py-lz4.h5'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.create_dataset(<span class="hljs-string">'data'</span>, data=data, compression=<span class="hljs-number">32001</span>,
+<span class="hljs-meta">... </span>                     compression_opts=(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">9</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>))
+<span class="hljs-meta">... </span>    %timeit f[<span class="hljs-string">'data'</span>][:]
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">155</span> ms per loop  <span class="hljs-comment"># blosc:lz4, no shuffle</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.h5py-lz4.h5
+<span class="hljs-number">69</span>M data.h5py-lz4.h5
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> h5py.File(<span class="hljs-string">'data.h5py-lz4-s.h5'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.create_dataset(<span class="hljs-string">'data'</span>, data=data, compression=<span class="hljs-number">32001</span>,
+<span class="hljs-meta">... </span>                     compression_opts=(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">9</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>))
+<span class="hljs-meta">... </span>    %timeit f[<span class="hljs-string">'data'</span>][:]
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">251</span> ms per loop   <span class="hljs-comment"># blosc:lz4, byte shuffle</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.h5py-lz4-s.h5
+<span class="hljs-number">47</span>M data.h5py-lz4-s.h5</code></pre>
+<ul>
+<li><code>32001</code> is the blosc filter code registered with HDF5.</li>
+<li>last three values in the options tuple: <code>(level, shuffle, algorithm)</code>.</li>
+<li>More info: <a href="https://github.com/Blosc/hdf5-blosc">https://github.com/Blosc/hdf5-blosc</a>.</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-14">
+    <section class="slide-content"><p>A few things regarding blosc filters (<a href="http://blosc.org">http://blosc.org</a>):</p>
+<ul>
+<li>Blosc (de)compressors are designed to work in parallel.</li>
+<li>Not trivial to integrate them in a thread-safe wrapper of HDF5.</li>
+<li><code>blosc</code> HDF5 filter is restricted to run in one thread (as of <code>1.4</code>).</li>
+</ul>
+<p>What if we want to use all cores for decompression?</p>
+<p>Here&#39;s one solution (<a href="http://github.com/aldanor/blox">http://github.com/aldanor/blox</a>):</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> blox
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> blox.File(<span class="hljs-string">'data.blx'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.write_array(<span class="hljs-string">'data'</span>, data, level=<span class="hljs-number">9</span>, shuffle=<span class="hljs-keyword">False</span>)
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> blox.File(<span class="hljs-string">'data.blx'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    %timeit f.read(<span class="hljs-string">'data'</span>)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">41.4</span> ms per loop  <span class="hljs-comment"># 4.4 GB/s</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -lh data.blx
+<span class="hljs-number">68</span>M data.blx</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-15">
+    <section class="slide-content"><p>Another example (extreme compression):</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> blox.File(<span class="hljs-string">'data.lz4hc.shuffle.blx'</span>, <span class="hljs-string">'w'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    f.write_array(<span class="hljs-string">'data'</span>, data, level=<span class="hljs-number">9</span>, compression=<span class="hljs-string">'lz4hc'</span>, shuffle=<span class="hljs-keyword">True</span>)
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">with</span> blox.File(<span class="hljs-string">'data.lz4hc.shuffle.blx'</span>) <span class="hljs-keyword">as</span> f:
+<span class="hljs-meta">... </span>    %timeit f.read(<span class="hljs-string">'data'</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">302</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>!ls -sh data.lz4hc.shuffle.blx
+<span class="hljs-number">37</span>M data.lz4hc.shuffle.blx</code></pre>
+<p>A few things about <code>blox</code>:</p>
+<ul>
+<li>A lightweight key-value binary format.</li>
+<li>Implemented in pure Python, depends on <code>python-blosc</code>.</li>
+<li>Inspired by <code>bloscpack</code> and <code>hdf5</code>.</li>
+<li>Can store JSON data and numpy arrays of any dimension.</li>
+<li>Uses heuristics from PyTables to estimate chunk shape.</li>
+</ul>
+<p>Further options: <code>bcolz</code>, <code>blaze</code>, <code>dask</code>, <code>bloscpack</code>.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-16">
+    <section class="slide-content"><p>Next part: <em>computing faster</em>.</p>
+<hr>
+
+<p>Imagine you need to compute the sum of a big and scary <code>numpy</code> array:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-meta">&gt;&gt;&gt; </span>arr = np.arange(int(<span class="hljs-number">1e7</span>))           <span class="hljs-comment"># 10 million int64 elements</span></code></pre>
+<p>You might attempt to do this:</p>
+<pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">slow_sum</span><span class="hljs-params">(a)</span>:</span>                        <span class="hljs-comment"># your first week of Python</span>
+    s = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(a.size):
+        s += a[i]
+    <span class="hljs-keyword">return</span> s
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit slow_sum(arr)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">2.03</span> s per loop</code></pre>
+<p>Or even this:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit sum(arr)                    <span class="hljs-comment"># your second week of Python</span>
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">1.06</span> s per loop     <span class="hljs-comment"># 2x faster than slow_sum</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-17">
+    <section class="slide-content"><p>Then you remember about <code>numpy.sum</code>:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit np.sum(arr)                 <span class="hljs-comment"># or arr.sum()</span>
+<span class="hljs-number">100</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">7.65</span> ms per loop  <span class="hljs-comment"># 140x faster than sum()</span></code></pre>
+<p>... which appears to be lightning fast. Game over.</p>
+<p>It&#39;s written in C, after all?</p>
+<p>...</p>
+<p>Can we do any faster without leaving Python console?</p>
+<hr>
+
+<p>In this section, we&#39;ll use <code>numba</code> to answer that.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-18">
+    <section class="slide-content"><p><code>numba</code> is a JIT-compiler for Python code developed by Continuum.</p>
+<p>Key features:</p>
+<ul>
+<li>Doesn&#39;t require a compilation step (unlike Cython).</li>
+<li>Python AST → Numba IR → LLVM IR (plus a wrapper).</li>
+<li>LLVM IR generation is done via <code>llvmlite</code> package.</li>
+<li>Relies on LLVM library to optimize and compile the IR.</li>
+<li>Supports a subset of Python, understands some NumPy.</li>
+<li>Provides adapters for Python objects and NumPy arrays.</li>
+<li>Converts NumPy functions to C calls.</li>
+<li>Supports multiple targets including CUDA.</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-19">
+    <section class="slide-content"><p>Can we make <code>slow_sum</code> 370x faster with just one extra line of code? Yes:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> numba
+
+<span class="hljs-meta">@numba.jit</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fast_sum</span><span class="hljs-params">(a)</span>:</span>
+    s = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(a.size):
+        s += a[i]
+    <span class="hljs-keyword">return</span> s
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit -n1 -r1 fast_sum(arr)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">1</span>: <span class="hljs-number">82</span> ms per loop      <span class="hljs-comment"># LLVM IR is being compiled</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit fast_sum(arr)
+<span class="hljs-number">100</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">5.42</span> ms per loop  <span class="hljs-comment"># the compiled code is cached</span></code></pre>
+<p>It turns out that <code>fast_sum</code> is 40% faster than <code>numpy.sum</code> once it&#39;s compiled.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-20">
+    <section class="slide-content"><p><code>fast_sum</code> is not just a <em>function</em> that computes a sum of an array of <code>int64</code>
+elements, but rather a <em>factory</em> for such functions plus a <em>dispatcher</em> that
+routes the calls to specialized pre-compiled functions.</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>fast_sum.signatures
+[(array(int64, <span class="hljs-number">1</span>d, C),)]</code></pre>
+<p>It currently hosts a function specialized for 1-dimensional contiguous
+arrays with <code>int64</code> elements (since that&#39;s what we used in the benchmark).</p>
+<p>If we pass it arrays made of other types (such as <code>int8</code> and <code>float64</code>), the
+function cache will contain the corresponding specialized versions:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>fast_sum(np.zeros(<span class="hljs-number">1</span>, np.int8));
+<span class="hljs-meta">&gt;&gt;&gt; </span>fast_sum(np.zeros(<span class="hljs-number">1</span>, float));
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>fast_sum.signatures
+[(array(int64, <span class="hljs-number">1</span>d, C),), (array(int8, <span class="hljs-number">1</span>d, C),), (array(float64, <span class="hljs-number">1</span>d, C),)]</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-21">
+    <section class="slide-content"><p>For large functions, the type inference engine in <code>numba</code> may fail to
+do what you want, in which case you can provide the signature explicitly:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">from</span> numba <span class="hljs-keyword">import</span> int32, int64
+
+<span class="hljs-meta">@numba.jit(</span>
+    int64(int64[:]),                 <span class="hljs-comment"># explicit function signature</span>
+    nopython=<span class="hljs-keyword">True</span>,                   <span class="hljs-comment"># disable the use of PyObject</span>
+    boundcheck=<span class="hljs-keyword">False</span>,                <span class="hljs-comment"># turn off array bounds checks</span>
+    nogil=<span class="hljs-keyword">True</span>,                      <span class="hljs-comment"># force releasing the GIL</span>
+    locals={<span class="hljs-string">'i'</span>: int32, <span class="hljs-string">'s'</span>: int64}  <span class="hljs-comment"># types of local variables</span>
+)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fast_sum</span><span class="hljs-params">(a)</span>:</span>
+    s = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(a.size):
+        s += a[i]
+    <span class="hljs-keyword">return</span> s</code></pre>
+<p>However, unless you absolutely know what you&#39;re doing, leave the inference
+to <code>numba</code>. In fact, this version of <code>fast_sum</code> runs 3x slower than the original.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-22">
+    <section class="slide-content"><p>The latter version of <code>fast_sum</code> is slow mainly because it accepts
+arrays with arbitrary layouts, so LLVM can&#39;t optimize for the contiguous case:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>fast_sum.signatures
+[(array(int64, <span class="hljs-number">1</span>d, A),)]             <span class="hljs-comment"># 1-D int64 with arbitrary layout</span></code></pre>
+<p>Here&#39;s a quick fix:</p>
+<pre><code class="lang-python"><span class="hljs-meta">@numba.jit(</span>
+    int64(int64[::<span class="hljs-number">1</span>]),               <span class="hljs-comment"># restrict to contiguous arrays</span>
+    nopython=<span class="hljs-keyword">True</span>,
+    boundcheck=<span class="hljs-keyword">False</span>,
+    nogil=<span class="hljs-keyword">True</span>,
+    locals={<span class="hljs-string">'i'</span>: int64, <span class="hljs-string">'s'</span>: int64}  <span class="hljs-comment"># also change the type of i to int64</span>
+)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fast_sum</span><span class="hljs-params">(a)</span>:</span>
+    s = <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(a.size):
+        s += a[i]
+    <span class="hljs-keyword">return</span> s</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-23">
+    <section class="slide-content"><p>A few useful configuration values in <code>numba.config</code>:</p>
+<ul>
+<li><code>OPT</code> [<code>0-3</code>]: controls the LLVM optimization level;
+this is extremely useful when inspecting the generated LLVM IR.</li>
+<li><code>DUMP_IR</code> [<code>0-1</code>]: print Numba IR when wrapping a function.</li>
+<li><code>DUMP_LLVM</code> [<code>0-1</code>]: print LLVM IR when wrapping a function.</li>
+<li><code>DEBUG</code> [<code>0-1</code>]: print all debug information including inferred types.</li>
+</ul>
+<p>If <code>func</code> is a function decorated with <code>@numba.jit</code> and <code>sig</code> is one of the
+signatures listed in <code>func.signatures</code>:</p>
+<ul>
+<li><code>func.inspect_llvm()[sig]</code> returns the LLVM IR.</li>
+<li><code>func.inspect_asm()[sig]</code> returns the assembly code.</li>
+<li><code>func.inspect_types()[sig]</code> returns the source code annotated with types;
+useful for inspecting what the type inference engine does.</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-24">
+    <section class="slide-content"><p>For the next example, imagine we have a large integer matrix where columns
+are variables, rows are observations, and values are bounded:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.random.seed(<span class="hljs-number">42</span>)
+<span class="hljs-comment"># 50 variables, 1 million observations, values are from -100 to 99</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>data = np.random.randint(<span class="hljs-number">-100</span>, <span class="hljs-number">100</span>, (int(<span class="hljs-number">1e6</span>), <span class="hljs-number">50</span>))</code></pre>
+<p>If we want to compute column-wise statistics, we can use <code>numpy</code>:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit data.mean(axis=<span class="hljs-number">0</span>)                <span class="hljs-comment"># mean</span>
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">75.1</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit data.std(axis=<span class="hljs-number">0</span>)                 <span class="hljs-comment"># standard deviation</span>
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">368</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit np.percentile(data, <span class="hljs-number">25</span>, axis=<span class="hljs-number">0</span>,  <span class="hljs-comment"># 25% quantile</span>
+<span class="hljs-meta">... </span>                      interpolation=<span class="hljs-string">'lower'</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">1.46</span> s per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit np.median(data, axis=<span class="hljs-number">0</span>)          <span class="hljs-comment"># median</span>
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">1.53</span> s per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit data.ptp(axis=<span class="hljs-number">0</span>)                 <span class="hljs-comment"># min to max range</span>
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">108</span> ms per loop</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-25">
+    <section class="slide-content"><ul>
+<li>Total elapsed time: 3.54 s, or 108 MB/s = quite sad.</li>
+<li><code>numpy</code> has to do multiple redundant passes over the data.</li>
+<li><code>pandas</code> is even slower, no surprise.</li>
+<li>Can we compute all statistics by doing just one pass?</li>
+<li>Can we use the fact that the values are bounded?</li>
+</ul>
+<p>One way to do this would be to first compute an exact <em>histogram</em> of the source data,
+and then to use that to compute all statistics. This will be much faster than working
+with original data since the histogram is an integer array that is orders of magnitude
+smaller.</p>
+<p>There&#39;s <code>numpy.bincount</code> function which is quite close but wouldn&#39;t work:</p>
+<ul>
+<li>Only deals with 1-dimensional arrays.</li>
+<li>Assumes that the lower bound for the values is 0.</li>
+</ul>
+<p>However, it&#39;s quite trivial to roll our own version.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-26">
+    <section class="slide-content"><pre><code class="lang-python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">histogram</span><span class="hljs-params">(arr, amin, amax)</span>:</span>
+    n_rows, n_columns = arr.shape
+    out = np.zeros((amax - amin, n_columns), int)
+    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> range(n_rows):
+        <span class="hljs-keyword">for</span> column <span class="hljs-keyword">in</span> range(n_columns):
+            out[arr[row, column] - amin, column] += <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> out
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.random.seed(<span class="hljs-number">42</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>arr = np.random.randint(<span class="hljs-number">5</span>, <span class="hljs-number">9</span>, (<span class="hljs-number">5</span>, <span class="hljs-number">3</span>))  <span class="hljs-comment"># 5 x 3 matrix, values [5; 9)</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>print(arr)
+[[<span class="hljs-number">7</span> <span class="hljs-number">8</span> <span class="hljs-number">5</span>]
+ [<span class="hljs-number">7</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span>]
+ [<span class="hljs-number">5</span> <span class="hljs-number">5</span> <span class="hljs-number">7</span>]
+ [<span class="hljs-number">6</span> <span class="hljs-number">7</span> <span class="hljs-number">7</span>]
+ [<span class="hljs-number">7</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span>]]
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span>counts = histogram(arr, <span class="hljs-number">5</span>, <span class="hljs-number">9</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>print(pd.DataFrame(hist, index=range(<span class="hljs-number">5</span>, <span class="hljs-number">9</span>)))
+   <span class="hljs-number">0</span>  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>
+<span class="hljs-number">5</span>  <span class="hljs-number">1</span>  <span class="hljs-number">1</span>  <span class="hljs-number">1</span>
+<span class="hljs-number">6</span>  <span class="hljs-number">1</span>  <span class="hljs-number">0</span>  <span class="hljs-number">0</span>
+<span class="hljs-number">7</span>  <span class="hljs-number">3</span>  <span class="hljs-number">3</span>  <span class="hljs-number">2</span>
+<span class="hljs-number">8</span>  <span class="hljs-number">0</span>  <span class="hljs-number">1</span>  <span class="hljs-number">2</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-27">
+    <section class="slide-content"><p>Can we compute column-wise sums from the histogram?</p>
+<pre><code class="lang-python">                  <span class="hljs-number">0</span>  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>
+               <span class="hljs-number">5</span>  <span class="hljs-number">1</span>  <span class="hljs-number">1</span>  <span class="hljs-number">1</span>
+               <span class="hljs-number">6</span>  <span class="hljs-number">1</span>  <span class="hljs-number">0</span>  <span class="hljs-number">0</span>
+               <span class="hljs-number">7</span>  <span class="hljs-number">3</span>  <span class="hljs-number">3</span>  <span class="hljs-number">2</span>
+               <span class="hljs-number">8</span>  <span class="hljs-number">0</span>  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum = np.zeros(<span class="hljs-number">3</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum[<span class="hljs-number">0</span>] = <span class="hljs-number">5</span> * <span class="hljs-number">1</span> + <span class="hljs-number">6</span> * <span class="hljs-number">1</span> + <span class="hljs-number">7</span> * <span class="hljs-number">3</span> + <span class="hljs-number">8</span> * <span class="hljs-number">0</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum[<span class="hljs-number">1</span>] = <span class="hljs-number">5</span> * <span class="hljs-number">1</span> + <span class="hljs-number">6</span> * <span class="hljs-number">0</span> + <span class="hljs-number">7</span> * <span class="hljs-number">3</span> + <span class="hljs-number">8</span> * <span class="hljs-number">1</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum[<span class="hljs-number">2</span>] = <span class="hljs-number">5</span> * <span class="hljs-number">1</span> + <span class="hljs-number">6</span> * <span class="hljs-number">0</span> + <span class="hljs-number">7</span> * <span class="hljs-number">2</span> + <span class="hljs-number">8</span> * <span class="hljs-number">2</span></code></pre>
+<p>which is the same as</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>values = np.arange(<span class="hljs-number">5</span>, <span class="hljs-number">9</span>)                     <span class="hljs-comment"># 1-D row-vector: [5, 6, 7, 8]</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>column_values = values.reshape((<span class="hljs-number">4</span>, <span class="hljs-number">1</span>))       <span class="hljs-comment"># column-vector: [[5, 6, 7, 8]]</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum = (column_values * counts).sum(axis=<span class="hljs-number">0</span>)</code></pre>
+<p>or even just</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum = np.dot(values, counts)                <span class="hljs-comment"># vector-matrix dot product</span></code></pre>
+<p>Similar reasoning can be applied for computing most other statistics.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-28">
+    <section class="slide-content"><p>Before we continue with other stats, we need to address performance:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit histogram(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-number">1</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">27.9</span> s per loop     <span class="hljs-comment"># coffee time</span></code></pre>
+<p>The usual fix: wrap it in <code>@numba.jit</code> and hope for the best!</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> numba
+
+<span class="hljs-meta">@numba.jit</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">histogram</span><span class="hljs-params">(arr, amin, amax)</span>:</span>
+    n_rows, n_columns = arr.shape
+    out = np.zeros((amax - amin, n_columns), int)
+    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> range(n_rows):
+        <span class="hljs-keyword">for</span> column <span class="hljs-keyword">in</span> range(n_columns):
+            out[arr[row, column] - amin, column] += <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> out
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit histogram(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">85.3</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.array_equal(histogram(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>),
+<span class="hljs-meta">... </span>    np.array([np.bincount(data[:, i] + <span class="hljs-number">100</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">50</span>)]).T)
+<span class="hljs-keyword">True</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-29">
+    <section class="slide-content"><p>Let&#39;s find the column-wise <code>sum</code> and <code>mean</code> of the original dataset:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>values = np.arange(<span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>counts = histogram(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_sum = np.dot(values, counts)
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.array_equal(cw_sum, data.sum(axis=<span class="hljs-number">0</span>))
+<span class="hljs-keyword">True</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_mean = cw_sum / data.shape[<span class="hljs-number">0</span>]
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.array_equal(cw_mean, data.mean(axis=<span class="hljs-number">0</span>))
+<span class="hljs-keyword">True</span></code></pre>
+<p>Given the <code>mean</code>, we can also compute <code>var</code> and <code>std</code>:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>sq_dev = (values - cw_mean) ** <span class="hljs-number">2</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_var = np.dot(sq_dev, counts) / data.shape[<span class="hljs-number">0</span>]
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.allclose(cw_var, data.var(axis=<span class="hljs-number">0</span>))
+<span class="hljs-keyword">True</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>cw_std = np.sqrt(cw_var)
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.allclose(cw_std, data.std(axis=<span class="hljs-number">0</span>))
+<span class="hljs-keyword">True</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-30">
+    <section class="slide-content"><p>We can encapsulate the histogram logic in a simple class:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Stats</span><span class="hljs-params">(object)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, arr, amin, amax)</span>:</span>
+        self.values = np.arange(amin, amax)
+        self.counts = histogram(arr, amin, amax)
+        self.n_rows, self.n_columns = arr.shape
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sum</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> np.dot(self.values, self.counts)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mean</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.sum() / self.n_rows
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">var</span><span class="hljs-params">(self)</span>:</span>
+        sq_dev = (self.values - self.mean()) ** <span class="hljs-number">2</span>
+        <span class="hljs-keyword">return</span> np.dot(sq_dev, self.counts) / self.n_rows
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">std</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> np.sqrt(self.var())
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>stats = Stats(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.sum(), data.sum(axis=<span class="hljs-number">0</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.mean(), data.mean(axis=<span class="hljs-number">0</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.allclose(stats.var(), data.var(axis=<span class="hljs-number">0</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.allclose(stats.std(), data.std(axis=<span class="hljs-number">0</span>))</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-31">
+    <section class="slide-content"><p>To compute column-wise <code>min</code> / <code>max</code>, we need to find the lowest / highest value
+with non-zero count for each column; <code>ptp</code> is just the difference:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Stats</span><span class="hljs-params">(object)</span>:</span>
+    ...
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">min</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> np.array([self.values[self.counts[:, column] &gt; <span class="hljs-number">0</span>][<span class="hljs-number">0</span>]
+                         <span class="hljs-keyword">for</span> column <span class="hljs-keyword">in</span> range(self.n_columns)])
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">max</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> np.array([self.values[self.counts[:, column] &gt; <span class="hljs-number">0</span>][<span class="hljs-number">-1</span>]
+                         <span class="hljs-keyword">for</span> column <span class="hljs-keyword">in</span> range(self.n_columns)])
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ptp</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.max() - self.min()
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.min(), data.min(axis=<span class="hljs-number">0</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.max(), data.max(axis=<span class="hljs-number">0</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.ptp(), data.ptp(axis=<span class="hljs-number">0</span>))</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-32">
+    <section class="slide-content"><p><code>percentile</code> and <code>median</code> require one search operation per column, but
+the implementation is quite simple:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Stats</span><span class="hljs-params">(object)</span>:</span>
+    ...
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">percentile</span><span class="hljs-params">(self, p)</span>:</span>
+        q = p * self.n_rows * <span class="hljs-number">0.01</span>
+        cumhist = self.counts.cumsum(axis=<span class="hljs-number">0</span>)
+        result = np.empty(self.n_columns, float)
+        <span class="hljs-keyword">for</span> column <span class="hljs-keyword">in</span> range(self.n_columns):
+            idx = cumhist[:, column].searchsorted(q, side=<span class="hljs-string">'left'</span>)
+            result[column] = self.values[idx]
+        <span class="hljs-keyword">return</span> result
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">median</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.percentile(<span class="hljs-number">50</span>)
+
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.percentile(<span class="hljs-number">25</span>),
+<span class="hljs-meta">... </span>                      np.percentile(data, <span class="hljs-number">25</span>, axis=<span class="hljs-number">0</span>,
+<span class="hljs-meta">... </span>                                    interpolation=<span class="hljs-string">'lower'</span>))
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> np.array_equal(stats.median(), np.median(data, axis=<span class="hljs-number">0</span>))</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-33">
+    <section class="slide-content"><p>Back to the original example:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats = Stats(data, <span class="hljs-number">-100</span>, <span class="hljs-number">100</span>)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">85.3</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats.mean()
+<span class="hljs-number">10000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">28.7</span> µs per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats.std()
+<span class="hljs-number">10000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">88.7</span> µs per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats.percentile(<span class="hljs-number">25</span>)
+<span class="hljs-number">1000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">264</span> µs per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats.median()
+<span class="hljs-number">1000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">267</span> µs per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit stats.ptp()
+<span class="hljs-number">1000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">241</span> µs per loop</code></pre>
+<p>Total elapsed time: 86 ms, approximately 40x faster than using <code>numpy</code> directly, or 4.3 GB/s.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-34">
+    <section class="slide-content"><p>Room for further improvement:</p>
+<ul>
+<li>Support for multi-dimensional arrays.</li>
+<li>Aggregating along arbitrary axes.</li>
+<li>Implement more aggregating functions.</li>
+<li>Parallelize histogram construction.</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-35">
+    <section class="slide-content"><p>As a next example, we&#39;ll a build a fast decision tree evaluator.</p>
+<p>For this purpose, we&#39;ll use a decision tree generated by <code>scikit-learn</code> trained
+on random data:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">from</span> sklearn.tree <span class="hljs-keyword">import</span> DecisionTreeClassifier
+
+n_features, n_samples = <span class="hljs-number">3</span>, <span class="hljs-number">1000</span>
+np.random.seed(<span class="hljs-number">42</span>)
+X = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">100</span>, (n_samples, n_features)) / <span class="hljs-number">100.</span>
+y = np.random.random(n_samples) &lt; <span class="hljs-number">0.5</span>
+
+clf = DecisionTreeClassifier(max_leaf_nodes=<span class="hljs-number">8</span>).fit(X, y)</code></pre>
+<p>Once trained, the classifier&#39;s <code>predict()</code> method can be used to generate predictions
+given a matrix of input data:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>clf.predict(X[:<span class="hljs-number">5</span>])
+array([ <span class="hljs-keyword">True</span>, <span class="hljs-keyword">False</span>, <span class="hljs-keyword">False</span>, <span class="hljs-keyword">False</span>, <span class="hljs-keyword">False</span>], dtype=bool)</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-36">
+    <section class="slide-content"><pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-meta">&gt;&gt;&gt; </span>print(pd.DataFrame({
+<span class="hljs-meta">... </span>    <span class="hljs-string">'feature'</span>: clf.tree_.feature, <span class="hljs-string">'threshold'</span>: clf.tree_.threshold,
+<span class="hljs-meta">... </span>    <span class="hljs-string">'left'</span>: clf.tree_.children_left, <span class="hljs-string">'right'</span>: clf.tree_.children_right,
+<span class="hljs-meta">... </span>    <span class="hljs-string">'value'</span>: clf.tree_.value[:, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>] &gt; clf.tree_.value[:, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]}))
+
+   feature  left  right  threshold  value
+<span class="hljs-number">0</span>        <span class="hljs-number">2</span>     <span class="hljs-number">1</span>      <span class="hljs-number">2</span>      <span class="hljs-number">0.225</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">1</span>        <span class="hljs-number">0</span>     <span class="hljs-number">3</span>      <span class="hljs-number">4</span>      <span class="hljs-number">0.965</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">2</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">3</span>        <span class="hljs-number">0</span>     <span class="hljs-number">5</span>      <span class="hljs-number">6</span>      <span class="hljs-number">0.275</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">4</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">5</span>        <span class="hljs-number">1</span>     <span class="hljs-number">7</span>      <span class="hljs-number">8</span>      <span class="hljs-number">0.900</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">6</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">7</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">8</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span></code></pre>
+<ul>
+<li>Given vector <code>x</code>, start evaluation at the first row.</li>
+<li>If <code>feature &lt; 0</code>, it&#39;s a leaf node, return <code>value</code>.</li>
+<li>Otherwise, check if <code>x[feature] &lt;= threshold</code>.</li>
+<li>If true, jump to <code>left</code> node (row # <code>left</code>).</li>
+<li>Otherwise, jump to <code>right</code> node (row # <code>right</code>).</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-37">
+    <section class="slide-content"><pre><code class="lang-python">   feature  left  right  threshold  value
+<span class="hljs-number">0</span>        <span class="hljs-number">2</span>     <span class="hljs-number">1</span>      <span class="hljs-number">2</span>      <span class="hljs-number">0.225</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">1</span>        <span class="hljs-number">0</span>     <span class="hljs-number">3</span>      <span class="hljs-number">4</span>      <span class="hljs-number">0.965</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">2</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">3</span>        <span class="hljs-number">0</span>     <span class="hljs-number">5</span>      <span class="hljs-number">6</span>      <span class="hljs-number">0.275</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">4</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">5</span>        <span class="hljs-number">1</span>     <span class="hljs-number">7</span>      <span class="hljs-number">8</span>      <span class="hljs-number">0.900</span>  <span class="hljs-keyword">False</span>
+<span class="hljs-number">6</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">7</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>   <span class="hljs-keyword">True</span>
+<span class="hljs-number">8</span>       <span class="hljs-number">-2</span>    <span class="hljs-number">-1</span>     <span class="hljs-number">-1</span>     <span class="hljs-number">-2.000</span>  <span class="hljs-keyword">False</span></code></pre>
+<div class="pic-right">
+<img src="assets/tree-example.png" alt="">
+</div></section>
+  </div>
+  <div class="slide hidden -" id="slide-38">
+    <section class="slide-content"><pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate</span><span class="hljs-params">(x)</span>:</span>
+    <span class="hljs-keyword">if</span> x[<span class="hljs-number">2</span>] &lt;= <span class="hljs-number">0.225</span>:
+        <span class="hljs-keyword">if</span> x[<span class="hljs-number">1</span>] &lt;= <span class="hljs-number">0.965</span>:
+            <span class="hljs-keyword">if</span> x[<span class="hljs-number">0</span>] &lt;= <span class="hljs-number">0.275</span>:
+                <span class="hljs-keyword">if</span> x[<span class="hljs-number">1</span>] &lt;= <span class="hljs-number">0.900</span>:
+                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span></code></pre>
+<div class="pic-right">
+<img src="assets/tree-example.png" alt="">
+</div></section>
+  </div>
+  <div class="slide hidden -" id="slide-39">
+    <section class="slide-content"><p>Here&#39;s a thought: let&#39;s write code that <em>writes code</em> that evaluates a tree.</p>
+<p>First, a little helper class to simplify code generation:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CodeWriter</span><span class="hljs-params">(object)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>
+        self.code, self.level = <span class="hljs-string">''</span>, <span class="hljs-number">0</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">indent</span><span class="hljs-params">(self)</span>:</span>
+        self.level += <span class="hljs-number">1</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">unindent</span><span class="hljs-params">(self)</span>:</span>
+        self.level -= <span class="hljs-number">1</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">write</span><span class="hljs-params">(self, line, *args, **kwargs)</span>:</span>
+        line = line.strip().format(*args, **kwargs)
+        self.code += <span class="hljs-string">' '</span> * self.level * <span class="hljs-number">4</span> + line + <span class="hljs-string">'\n'</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.code</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-40">
+    <section class="slide-content"><p>... and it can be used like so:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>code = CodeWriter()
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.write(<span class="hljs-string">'def is_even({}):'</span>, <span class="hljs-string">'x'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.indent()
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.write(<span class="hljs-string">'if x % 2 == 0:'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.indent()
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.write(<span class="hljs-string">'# a comment'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.write(<span class="hljs-string">'return True'</span>)
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.unindent()
+<span class="hljs-meta">&gt;&gt;&gt; </span>code.write(<span class="hljs-string">'return False'</span>)
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>print(code)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_even</span><span class="hljs-params">(x)</span>:</span>
+    <span class="hljs-keyword">if</span> x % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>:
+        <span class="hljs-comment"># a comment</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-41">
+    <section class="slide-content"><p>Here&#39;s one possible implementation of the tree evaluator generator:</p>
+<pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tree_to_code</span><span class="hljs-params">(tree, i=<span class="hljs-number">0</span>, code=None)</span>:</span>
+    <span class="hljs-keyword">if</span> code <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:
+        code = CodeWriter()
+        code.write(<span class="hljs-string">'def evaluate(x):'</span>)
+        code.indent()
+    <span class="hljs-keyword">if</span> tree.feature[i] &lt; <span class="hljs-number">0</span>:
+        <span class="hljs-comment"># current node is a leaf node</span>
+        value = tree.value[i, <span class="hljs-number">0</span>, :]
+        code.write(<span class="hljs-string">'return {}'</span>, value[<span class="hljs-number">1</span>] &gt; value[<span class="hljs-number">0</span>])
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># current node is an internal node</span>
+        code.write(<span class="hljs-string">'if x[{}] &lt;= {:g}:'</span>, tree.feature[i], tree.threshold[i])
+        code.indent()
+        tree_to_code(tree, tree.children_left[i], code)  <span class="hljs-comment"># left sub-tree</span>
+        code.unindent()
+        tree_to_code(tree, tree.children_right[i], code) <span class="hljs-comment"># right sub-tree</span>
+    <span class="hljs-keyword">return</span> str(code)</code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-42">
+    <section class="slide-content"><pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>print(tree_to_code(clf.tree_))
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">evaluate</span><span class="hljs-params">(x)</span>:</span>
+    <span class="hljs-keyword">if</span> x[<span class="hljs-number">2</span>] &lt;= <span class="hljs-number">0.225</span>:
+        <span class="hljs-keyword">if</span> x[<span class="hljs-number">0</span>] &lt;= <span class="hljs-number">0.965</span>:
+            <span class="hljs-keyword">if</span> x[<span class="hljs-number">0</span>] &lt;= <span class="hljs-number">0.275</span>:
+                <span class="hljs-keyword">if</span> x[<span class="hljs-number">1</span>] &lt;= <span class="hljs-number">0.9</span>:
+                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span></code></pre>
+<p>Let&#39;s verify that the generated evaluator is working correctly:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>env = {}                            <span class="hljs-comment"># create an empty 'module'</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>exec(tree_to_code(clf.tree_), env)  <span class="hljs-comment"># run the code in its environment</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span>evaluate = env[<span class="hljs-string">'evaluate'</span>]          <span class="hljs-comment"># extract the function object</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.all(clf.predict(X) == [evaluate(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> X])
+<span class="hljs-keyword">True</span></code></pre>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-43">
+    <section class="slide-content"><p>What about performance? So far, our evaluator is a pure Python function so
+we don&#39;t expect it to be any faster than the Cython implementation:</p>
+<pre><code class="lang-python"><span class="hljs-meta">&gt;&gt;&gt; </span>%timeit clf.predict(X)
+<span class="hljs-number">10000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">72</span> µs per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit [evaluate(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> X]
+<span class="hljs-number">1000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">720</span> µs per loop</code></pre>
+<p>And quite unsurprisingly, it turns out to be 10x slower.</p>
+<p>Here&#39;s a cheap plan on how to make it faster:</p>
+<ul>
+<li>Compile the code for evaluating a single vector with <code>numba</code></li>
+<li>Write a <code>numba</code> function that vectorizes the evaluation process</li>
+</ul>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-44">
+    <section class="slide-content"><pre><code class="lang-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tree_evaluator</span><span class="hljs-params">(tree)</span>:</span>
+    env = {}
+    exec(tree_to_code(tree), env)
+    evaluate = numba.jit(env[<span class="hljs-string">'evaluate'</span>])   <span class="hljs-comment"># fast evaluator for a vector</span>
+
+<span class="hljs-meta">    @numba.jit</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wrapper</span><span class="hljs-params">(x)</span>:</span>                         <span class="hljs-comment"># fast evaluator for a matrix</span>
+        out = np.empty(x.shape[<span class="hljs-number">0</span>], bool)
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(x.shape[<span class="hljs-number">0</span>]):
+            out[i] = evaluate(x[i, :])
+        <span class="hljs-keyword">return</span> out
+    <span class="hljs-keyword">return</span> wrapper
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>evaluator = tree_evaluator(clf.tree_)
+<span class="hljs-meta">&gt;&gt;&gt; </span>np.all(clf.predict(X) == evaluator(X))  <span class="hljs-comment"># verify correctness</span>
+<span class="hljs-keyword">True</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit evaluator(X)
+<span class="hljs-number">10000</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">38.1</span> µs per loop</code></pre>
+<p>This version appears to be almost 2x faster than the reference <code>scikit-learn</code>
+implementation, albeit on a toy dataset and a small tree.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-45">
+    <section class="slide-content"><p>Does it scale well? Let&#39;s test it on a tree with 256 leaf nodes and
+a larger dataset with 20 features and 1 million data points (150 MB data).</p>
+<pre><code class="lang-python">np.random.seed(<span class="hljs-number">42</span>)
+n_features, n_samples = <span class="hljs-number">20</span>, <span class="hljs-number">1000</span>
+X = np.random.randint(<span class="hljs-number">0</span>, <span class="hljs-number">100</span>, (n_samples, n_features)) / <span class="hljs-number">100.</span>
+y = np.random.random(n_samples) &lt; <span class="hljs-number">0.5</span>
+
+clf = DecisionTreeClassifier(max_leaf_nodes=<span class="hljs-number">256</span>).fit(X, y)
+evaluator = tree_evaluator(clf.tree_)
+
+data = np.random.random((int(<span class="hljs-number">1e6</span>), n_features))  <span class="hljs-comment"># 1 million rows</span>
+evaluator(data)                                  <span class="hljs-comment"># trigger JIT compilation</span>
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit clf.predict(data)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">128</span> ms per loop
+
+<span class="hljs-meta">&gt;&gt;&gt; </span>%timeit evaluator(data)
+<span class="hljs-number">10</span> loops, best of <span class="hljs-number">3</span>: <span class="hljs-number">48.5</span> ms per loop</code></pre>
+<p>The evaluator is now 2.6x faster, which is better than previously.</p>
+</section>
+  </div>
+  <div class="slide hidden -" id="slide-46">
+    <section class="slide-content"><p>Possible issues and room for further improvement:</p>
+<ul>
+<li>Large trees generate too much assembly code, not cache-friendly.</li>
+<li>For very large trees, Python code can exceed the limit of 64 KB.</li>
+<li>Floating-point values serialized as text, possible loss of precision.</li>
+<li>LLVM optimization for large tree evaluators may take too long.</li>
+</ul>
+<p>That being said, it works really well on medium-sized trees and can be reworked to
+address all of the above issues, support evaluation of forests of decision trees,
+etc (which is beyond the scope of this talk).</p>
+</section>
+  </div>
+  <div class="slide hidden" id="slide-47">
+    <section class="slide-content"><div class="author">
+  <h1 class="name">Ivan Smirnov</h1>
+    <h3 class="twitter">
+      <a href="http://twitter.com/@aldanor">@aldanor</a>
+    </h3>
+    <h3 class="url">
+      <a href="http://ivansmirnov.io">http://ivansmirnov.io</a>
+    </h3>
+</div>
+</section>
+  </div>
+
+
+
+  <script type="text/javascript">
+    /**
+ * Returns the current page number of the presentation.
+ */
+function currentPosition() {
+  return parseInt(document.querySelector('.slide:not(.hidden)').id.slice(6));
+}
+
+
+/**
+ * Navigates forward n pages
+ * If n is negative, we will navigate in reverse
+ */
+function navigate(n) {
+  var position = currentPosition();
+  var numSlides = document.getElementsByClassName('slide').length;
+
+  /* Positions are 1-indexed, so we need to add and subtract 1 */
+  var nextPosition = (position - 1 + n) % numSlides + 1;
+
+  /* Normalize nextPosition in-case of a negative modulo result */
+  nextPosition = (nextPosition - 1 + numSlides) % numSlides + 1;
+
+  document.getElementById('slide-' + position).classList.add('hidden');
+  document.getElementById('slide-' + nextPosition).classList.remove('hidden');
+
+  updateProgress();
+  updateURL();
+  updateTabIndex();
+}
+
+
+/**
+ * Updates the current URL to include a hashtag of the current page number.
+ */
+function updateURL() {
+  window.history.replaceState({} , null, '#' + currentPosition());
+}
+
+
+/**
+ * Sets the progress indicator.
+ */
+function updateProgress() {
+  var progressBar = document.querySelector('.progress-bar');
+
+  if (progressBar !== null) {
+    var numSlides = document.getElementsByClassName('slide').length;
+    var position = currentPosition() - 1;
+    var percent = (numSlides === 1) ? 100 : 100 * position / (numSlides - 1);
+    progressBar.style.width = percent.toString() + '%';
+  }
+}
+
+
+/**
+ * Removes tabindex property from all links on the current slide, sets
+ * tabindex = -1 for all links on other slides. Prevents slides from appearing
+ * out of control.
+ */
+function updateTabIndex() {
+  var allLinks = document.querySelectorAll('.slide a');
+  var position = currentPosition();
+  var currentPageLinks = document.getElementById('slide-' + position).querySelectorAll('a');
+  var i;
+
+  for (i = 0; i < allLinks.length; i++) {
+    allLinks[i].setAttribute('tabindex', -1);
+  }
+
+  for (i = 0; i < currentPageLinks.length; i++) {
+    currentPageLinks[i].removeAttribute('tabindex');
+  }
+}
+
+/**
+ * Determines whether or not we are currently in full screen mode
+ */
+function isFullScreen() {
+  return document.fullscreenElement ||
+         document.mozFullScreenElement ||
+         document.webkitFullscreenElement ||
+         document.msFullscreenElement;
+}
+
+/**
+ * Toggle fullScreen mode on document element.
+ * Works on chrome (>= 15), firefox (>= 9), ie (>= 11), opera(>= 12.1), safari (>= 5).
+ */
+function toggleFullScreen() {
+  /* Convenient renames */
+  var docElem = document.documentElement;
+  var doc = document;
+
+  docElem.requestFullscreen =
+      docElem.requestFullscreen ||
+      docElem.msRequestFullscreen ||
+      docElem.mozRequestFullScreen ||
+      docElem.webkitRequestFullscreen.bind(docElem, Element.ALLOW_KEYBOARD_INPUT);
+
+  doc.exitFullscreen =
+      doc.exitFullscreen ||
+      doc.msExitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.webkitExitFullscreen;
+
+  isFullScreen() ? doc.exitFullscreen() : docElem.requestFullscreen();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Update the tabindex to prevent weird slide transitioning
+  updateTabIndex();
+
+  // If the location hash specifies a page number, go to it.
+  var page = window.location.hash.slice(1);
+  if (page) {
+    navigate(parseInt(page) - 1);
+  }
+
+  document.onkeydown = function (e) {
+    var kc = e.keyCode;
+
+    // left, down, H, J, backspace, PgUp - BACK
+    // up, right, K, L, space, PgDn - FORWARD
+    // enter - FULLSCREEN
+    if (kc === 37 || kc === 40 || kc === 8 || kc === 72 || kc === 74 || kc === 33) {
+      navigate(-1);
+    } else if (kc === 38 || kc === 39 || kc === 32 || kc === 75 || kc === 76 || kc === 34) {
+      navigate(1);
+    } else if (kc === 13) {
+      toggleFullScreen();
+    }
+  };
+
+  if (document.querySelector('.next') && document.querySelector('.prev')) {
+    document.querySelector('.next').onclick = function (e) {
+      e.preventDefault();
+      navigate(1);
+    };
+
+    document.querySelector('.prev').onclick = function (e) {
+      e.preventDefault();
+      navigate(-1);
+    };
+  }
+});
+
+
+  </script>
+</body>
+</html>
